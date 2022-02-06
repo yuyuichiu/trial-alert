@@ -1,0 +1,25 @@
+<%- include('../includes/header', {title: title}) %>
+
+<%- include('../includes/navigation') %>
+<main class='container'>
+  <div class='loginForm'>
+    <h2 class='text-center'>Login</h1>
+    <form action='/login' method='post' autocomplete='off' class='loginForm'>
+      <div class='form-group my-2'>
+        <label for='usermail'>Your Email Address</label>
+        <input type='email' name='usermail' id='usermail' required autofocus class='form-control' />
+      </div>
+      <div class='form-group my-2'>
+        <label for='password'>Password</label>
+        <input type='password' name='password' id='password' required class='form-control' />
+      </div>
+
+      <div class='mx-auto'>
+        <button type='submit' class='btn btn-dark mx-2'>Login</button>
+        <a href='/register'>Register</a>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../includes/footer') %>
