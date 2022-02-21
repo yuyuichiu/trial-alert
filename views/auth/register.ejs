@@ -1,22 +1,35 @@
-<%- include('../includes/header', {title: title}) %>
+<%- include('../includes/header', {title: 'Register'}) %>
 
 <%- include('../includes/navigation') %>
 <main class='container'>
+  <% if(error) { %>
+    <div class='alert alert-danger'><%- error %></div>
+  <% } %>
   <div class='loginForm'>
     <h2 class='text-center'>Register an new account</h1>
-    <form action='/login' method='post' autocomplete='off' class='loginForm'>
-      <div class='form-group mb-2'>
-        <label for='usermail'>Your Email Address</label>
-        <input type='email' name='usermail' id='usermail' required autofocus class='form-control' />
+    <form action='/register' method='post' autocomplete='off' class='loginForm'>
+      <div class="'form-group mb-3">
+        <label for="firstname">👤 First name</label>
+        <input type="text" name="firstname" id="firstname" value='<%- data.firstname %>' required autofocus class="form-control" />
       </div>
 
-      <div class='form-group mb-2'>
-        <label for='password'>Password</label>
-        <input type='password' name='password' id='password' required class='form-control' />
+      <div class="'form-group mb-3">
+        <label for="lastname">👤 Family name / Last name</label>
+        <input type="text" name="lastname" id="lastname" value='<%- data.lastname %>' required autofocus class="form-control" />
       </div>
 
-      <div class='form-group mb-2'>
-        <label for='confirm-pw'>Confirm Password</label>
+      <div class='form-group mb-3'>
+        <label for='usermail'>📧 Your Email Address</label>
+        <input type='email' name='usermail' id='usermail' value='<%- data.mail %>' required class='form-control' />
+      </div>
+
+      <div class='form-group mb-3'>
+        <label for='password'>🔒 Password</label>
+        <input type='password' name='password' id='password' placeholder='We will protect your password with hash function' required class='form-control' />
+      </div>
+
+      <div class='form-group mb-3'>
+        <label for='confirm-pw'>🔒 Confirm Password</label>
         <input type='password' name='confirm-pw' id='confirm-pw' required class='form-control' />
       </div>
 

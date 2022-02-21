@@ -1,7 +1,13 @@
-<%- include('../includes/header', {title: title}) %>
+<%- include('../includes/header', {title: 'Login'}) %>
 
 <%- include('../includes/navigation') %>
 <main class='container'>
+  <% if(error) { %>
+    <div class='alert alert-danger'><%- error %></div>
+  <% } %>
+  <% if(alert) { %>
+    <div class='alert alert-info'><%- alert %></div>
+  <% } %>
   <div class='loginForm'>
     <h2 class='text-center'>Login</h1>
     <form action='/login' method='post' autocomplete='off' class='loginForm'>

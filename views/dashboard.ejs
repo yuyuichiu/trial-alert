@@ -1,8 +1,14 @@
-<%- include('includes/header', {title: title}) %>
+<%- include('includes/header', {title: 'Dashboard'}) %>
 
 <%- include('includes/navigation') %>
 <main class='container'>
   <h1>Dashboard</h1>
+  <% if (session.user) { %>
+    <p>Welcome, <%- session.user.firstname %>!</p>
+  <% } else { %>
+    <p>Please log in before proceed.</p>
+    <a href="/login">Login</a>
+  <% } %>
 </main>
 
 <%- include('includes/footer') %>
