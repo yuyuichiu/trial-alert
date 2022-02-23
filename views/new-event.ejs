@@ -1,0 +1,69 @@
+<%- include('includes/header', { title: 'Add Event'}) %>
+
+<%- include('includes/navigation') %>
+<main class="container">
+  <a href="/dashboard" class="text-secondary">Back to Dashboard</a>
+  <form action="/new-event" method="post" autocomplete="off" class="eventForm">
+    <h2 class="text-center mb-3">📅 Add an event 📅</h2>
+    <div class="form-group row mb-2">
+      <label for="title" class="col-sm-3 col-form-label">Title</label>
+      <div class="col-sm-9">
+        <input type="text" name="title" id="title" class="form-control" required autofocus />
+      </div>
+    </div>
+
+    <div class="form-group row mb-2">
+      <label for="description" class="col-sm-3 col-form-label">Description</label>
+      <div class="col-sm-9">
+        <input type="text" name="description" id="descirption" placeholder='(optional)' class="form-control"/>
+      </div>
+    </div>
+    
+    <div class="form-group row mb-4">
+      <label for="eventdate" class="col-sm-3 col-form-label">Date</label>
+      <div class="col-sm-9">
+        <input type="date" name="eventdate" id="eventdate" class="form-control"/>
+      </div>
+    </div>
+
+    <div class="form-group mb-2">
+      <input type="checkbox" id='alert' checked/>
+      <label for="alert">📧 Alert me with email</label>
+    </div>
+
+    <div class="row mb-3" id="alertConfig">
+      <div class="form-group col-md-6">
+        <label for="alertDate">Alert Date</label>
+        <input type="date" name="alertDate" id="alertDate" class="form-control"/>
+      </div>
+
+      <div class="form-group col-md-6">
+        <label for="alertTime">Alert Time</label>
+        <input type="time" name="alertTime" id="alertTime" class="form-control"/>
+      </div>
+      <p class="text-center text-secondary">We will convert time appropriately based on your timezone.</p>
+    </div>
+
+    <button type="submit" class="btn btn-dark mx-auto">Add event to your dashboard</button>
+  </form>
+
+  <p>Your timezone is UTC<%- new Date().getTimezoneOffset() < 0 ? '+' : '' %><%- new Date().getTimezoneOffset()/-60 %></p>
+</main>
+
+<script>
+  let timezoneOffset = new Date().getTimezoneOffset();
+  let alertCheckbox = document.querySelector('#alert');
+  let alertConfig = document.querySelector('#alertConfig');
+
+  document.addEventListener('input', () => {
+    if(alertCheckbox.checked) {
+      document.querySelector('#alertDate').disabled = false;
+      document.querySelector('#alertTime').disabled = false;
+    } else {
+      document.querySelector('#alertDate').disabled = true;
+      document.querySelector('#alertTime').disabled = true;
+    }
+  })
+</script>
+
+<%- include('includes/footer') %>

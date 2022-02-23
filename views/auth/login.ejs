@@ -2,21 +2,21 @@
 
 <%- include('../includes/navigation') %>
 <main class='container'>
-  <% if(error) { %>
+  <% if(typeof error !== 'undefined') { %>
     <div class='alert alert-danger'><%- error %></div>
   <% } %>
-  <% if(alert) { %>
-    <div class='alert alert-info'><%- alert %></div>
+  <% if(typeof alert !== 'undefined') { %>
+    <div class='alert alert-info'>📢 <%- alert %></div>
   <% } %>
   <div class='loginForm'>
     <h2 class='text-center'>Login</h1>
     <form action='/login' method='post' autocomplete='off' class='loginForm'>
       <div class='form-group my-2'>
-        <label for='usermail'>Your Email Address</label>
+        <label for='usermail'>📧 Your Email Address</label>
         <input type='email' name='usermail' id='usermail' required autofocus class='form-control' />
       </div>
       <div class='form-group my-2'>
-        <label for='password'>Password</label>
+        <label for='password'>🔒 Password</label>
         <input type='password' name='password' id='password' required class='form-control' />
       </div>
 

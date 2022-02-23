@@ -9,6 +9,30 @@
     <p>Please log in before proceed.</p>
     <a href="/login">Login</a>
   <% } %>
+  
+  <a href="/new-event">
+    <button class="btn btn-dark m-auto">Add event</button>
+  </a>
+  <hr />
+  <div class="table-responsive my-3">
+    <h2 class="text-center">Your events</h2>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Date</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Templar Meeting</td>
+          <td>2020-01-01</td>
+          <td>The time to meet my fellow fiends</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </main>
 
 <%- include('includes/footer') %>

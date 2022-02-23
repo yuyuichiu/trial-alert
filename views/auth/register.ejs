@@ -2,25 +2,27 @@
 
 <%- include('../includes/navigation') %>
 <main class='container'>
-  <% if(error) { %>
+  <% if(typeof error !== 'undefined') { %>
     <div class='alert alert-danger'><%- error %></div>
   <% } %>
   <div class='loginForm'>
-    <h2 class='text-center'>Register an new account</h1>
+    <h2 class='text-center'>Register your account</h1>
     <form action='/register' method='post' autocomplete='off' class='loginForm'>
-      <div class="'form-group mb-3">
-        <label for="firstname">👤 First name</label>
-        <input type="text" name="firstname" id="firstname" value='<%- data.firstname %>' required autofocus class="form-control" />
-      </div>
+      <div class="row mb-3">
+        <div class="form-group col-md-6">
+          <label for="firstname">👤 First name</label>
+          <input type="text" name="firstname" id="firstname" value='<%- data.firstname %>' required autofocus class="form-control" />
+        </div>
 
-      <div class="'form-group mb-3">
-        <label for="lastname">👤 Family name / Last name</label>
-        <input type="text" name="lastname" id="lastname" value='<%- data.lastname %>' required autofocus class="form-control" />
+        <div class="form-group col-md-6">
+          <label for="lastname">👤 Family name / Last name</label>
+          <input type="text" name="lastname" id="lastname" value='<%- data.lastname %>' required autofocus class="form-control" />
+        </div>
       </div>
 
       <div class='form-group mb-3'>
-        <label for='usermail'>📧 Your Email Address</label>
-        <input type='email' name='usermail' id='usermail' value='<%- data.mail %>' required class='form-control' />
+        <label for='usermail'>📧 Email Address &nbsp;&nbsp;<small>to receive alert and login</small></label>
+        <input type='email' name='usermail' id='usermail' value='<%- data.mail %>' required class='form-control' placeholder='We will not send marketing emails'/>
       </div>
 
       <div class='form-group mb-3'>

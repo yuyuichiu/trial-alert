@@ -34,7 +34,11 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET,
   resave: true,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { 
+    // expiration time, in ms
+    maxAge: 30 * 24 * 60 * 60 * 1000
+  }
 }))
 
 // Session setup
@@ -46,15 +50,19 @@ app.use(function(req, res, next) {
 // ROUTES
 // User Dashboard
 app.get('/dashboard', (req, res) => {
+  if(!req.session.user) { return res.redirect('/login') }
   return res.render('dashboard.ejs')
+})
+
+app.get('/new-event', (req, res) => {
+  if(!req.session.user) { return res.redirect('/login') }
+  return res.render('new-event.ejs')
 })
 
 // User Login
 app.get('/login', (req, res) => {
-  if(req.session.user) {
-    return res.redirect('/dashboard')
-  }
-  return res.render('auth/login.ejs', { error: null, alert: req.query.alert });
+  if(req.session.user) { return res.redirect('/dashboard') }
+  return res.render('auth/login.ejs', { alert: req.query.alert });
 });
 
 app.post('/login', async (req, res) => {
@@ -67,6 +75,7 @@ app.post('/login', async (req, res) => {
     // If result row exist => successful login
     if(result.rowCount === 1) {
       req.session.user = {
+        id: result.rows[0].id,
         mail: result.rows[0].usermail,
         firstname: result.rows[0].firstname,
         lastname: result.rows[0].lastname
@@ -88,7 +97,7 @@ app.get('/logout', (req, res) => {
 // User Register
 app.get('/register', (req, res) => {
   if (req.session.user) { req.session.destroy() }
-  return res.render('auth/register', { data: {}, error: null })
+  return res.render('auth/register', { data: {} })
 })
 
 app.post('/register', (req, res) => {
@@ -99,13 +108,16 @@ app.post('/register', (req, res) => {
   let confirmPassword = req.body['confirm-pw'];
   let userData = { firstname, lastname, mail }
 
-  // Reject on client side errors
+  // Reject on form input errors
   let emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
   if(!emailRegex.test(mail)) {
     return res.render('auth/register', { data: userData, error: 'Invalid Email Address' })
   }
   if(firstname.length > 100 || lastname.length > 100 || mail.length > 100) {
     return res.render('auth/register', { data: userData, error: 'Input character limit exceeded, we cap at 100 characters.' })
+  }
+  if(password.length < 8) {
+    return res.render('auth/register', { data: userData, error: 'Password is too short, make it at least 8 characters long.' })
   }
   if(password !== confirmPassword) {
     return res.render('auth/register', { data: userData, error: 'Password does not match' })
@@ -118,12 +130,12 @@ app.post('/register', (req, res) => {
       return res.render('auth/register', { data: userData, error: 'User already exist' })
     }
 
-    // User is unique, register User into database
+    // User is unique, register user into database
     let queryTxt = `INSERT INTO Users (firstname, lastname, usermail, password) VALUES ($1, $2, $3, $4)`;
     let hashPw = await hash(req.body.password, { algorithm: 'sha256' });
     client.query(queryTxt, [firstname, lastname, mail, hashPw], (err, result) => {
       if(err) { throw err }
-      return res.redirect('/login?alert=Account%20Created')
+      return res.redirect('/login?alert=Account%20Created')  // %20 === " "
     })
   })
 })
@@ -131,4 +143,10 @@ app.post('/register', (req, res) => {
 // Home page
 app.get('/', (req, res) => {
   return res.render('index.ejs');
+})
+
+// Error route
+app.get('*', (req, res) => {
+  res.status(404);
+  return res.render('error.ejs');
 })
