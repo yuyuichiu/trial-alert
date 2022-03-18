@@ -1,69 +1,118 @@
-<%- include('includes/header', { title: 'Add Event'}) %>
-
-<%- include('includes/navigation') %>
+<%- include('includes/header', { title: 'Add Event'}) %> <%-
+include('includes/navigation') %>
 <main class="container">
+  <% if(typeof error !== 'undefined') { %>
+    <div class="alert alert-danger"><%- error %></div>
+  <% } %>
   <a href="/dashboard" class="text-secondary">Back to Dashboard</a>
   <form action="/new-event" method="post" autocomplete="off" class="eventForm">
     <h2 class="text-center mb-3">📅 Add an event 📅</h2>
     <div class="form-group row mb-2">
       <label for="title" class="col-sm-3 col-form-label">Title</label>
       <div class="col-sm-9">
-        <input type="text" name="title" id="title" class="form-control" required autofocus />
+        <input
+          type="text"
+          name="title"
+          id="title"
+          class="form-control"
+          value="<% if(typeof userData !== 'undefined') { userData.title } %>"
+          required
+          autofocus
+        />
       </div>
     </div>
 
     <div class="form-group row mb-2">
-      <label for="description" class="col-sm-3 col-form-label">Description</label>
+      <label for="description" class="col-sm-3 col-form-label"
+        >Description</label
+      >
       <div class="col-sm-9">
-        <input type="text" name="description" id="descirption" placeholder='(optional)' class="form-control"/>
+        <input
+          type="text"
+          name="description"
+          id="descirption"
+          placeholder="(optional)"
+          class="form-control"
+          value="<% if(typeof userData !== 'undefined') { userData.description } %>"
+        />
       </div>
     </div>
-    
+
     <div class="form-group row mb-4">
-      <label for="eventdate" class="col-sm-3 col-form-label">Date</label>
+      <label for="eventDate" class="col-sm-3 col-form-label">Date</label>
       <div class="col-sm-9">
-        <input type="date" name="eventdate" id="eventdate" class="form-control"/>
+        <input
+          type="date"
+          name="eventDate"
+          id="eventDate"
+          class="form-control"
+          value="<% if(typeof userData !== 'undefined') { userData.eventDate } %>"
+          required
+        />
       </div>
     </div>
 
     <div class="form-group mb-2">
-      <input type="checkbox" id='alert' checked/>
+      <input type="checkbox" id="alert" />
       <label for="alert">📧 Alert me with email</label>
     </div>
 
     <div class="row mb-3" id="alertConfig">
       <div class="form-group col-md-6">
         <label for="alertDate">Alert Date</label>
-        <input type="date" name="alertDate" id="alertDate" class="form-control"/>
+        <input
+          type="date"
+          name="alertDate"
+          id="alertDate"
+          class="form-control"
+          value="<% if(typeof userData !== 'undefined') { userData.alertDate }%>"
+          disabled
+          required
+        />
       </div>
 
       <div class="form-group col-md-6">
         <label for="alertTime">Alert Time</label>
-        <input type="time" name="alertTime" id="alertTime" class="form-control"/>
+        <input
+          type="time"
+          name="alertTime"
+          id="alertTime"
+          class="form-control"
+          value="<% if(typeof userData !== 'undefined') { userData.alertTime } %>"
+          disabled
+          required
+        />
       </div>
-      <p class="text-center text-secondary">We will convert time appropriately based on your timezone.</p>
+      <p class="text-center text-secondary">
+        We will convert time appropriately based on your timezone.
+      </p>
     </div>
 
-    <button type="submit" class="btn btn-dark mx-auto">Add event to your dashboard</button>
+    <button type="submit" class="btn btn-dark mx-auto">
+      Add event to your dashboard
+    </button>
   </form>
 
-  <p>Your timezone is UTC<%- new Date().getTimezoneOffset() < 0 ? '+' : '' %><%- new Date().getTimezoneOffset()/-60 %></p>
+  <p>
+    Your timezone is UTC<%- new Date().getTimezoneOffset() < 0 ? '+' : '' %><%-
+    new Date().getTimezoneOffset()/-60 %>
+  </p>
 </main>
 
 <script>
   let timezoneOffset = new Date().getTimezoneOffset();
-  let alertCheckbox = document.querySelector('#alert');
-  let alertConfig = document.querySelector('#alertConfig');
+  let alertCheckbox = document.querySelector("#alert");
+  let alertConfig = document.querySelector("#alertConfig");
 
-  document.addEventListener('input', () => {
-    if(alertCheckbox.checked) {
-      document.querySelector('#alertDate').disabled = false;
-      document.querySelector('#alertTime').disabled = false;
+  document.addEventListener("input", () => {
+    if (alertCheckbox.checked) {
+      document.querySelector("#alertDate").disabled = false;
+      document.querySelector("#alertTime").disabled = false;
     } else {
-      document.querySelector('#alertDate').disabled = true;
-      document.querySelector('#alertTime').disabled = true;
+      document.querySelector("#alertDate").disabled = true;
+      document.querySelector("#alertTime").disabled = true;
     }
-  })
+  });
 </script>
 
 <%- include('includes/footer') %>

@@ -4,6 +4,7 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 const hash = require('object-hash');
+const { isValidDate, isValidTime } = require('./utility/util');
 require('dotenv').config();
 
 // Connect to database
@@ -51,12 +52,74 @@ app.use(function(req, res, next) {
 // User Dashboard
 app.get('/dashboard', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
-  return res.render('dashboard.ejs')
+
+  let queryText = "SELECT id, title, description, TO_CHAR(eventdate, 'DD/MM/YYYY') as eventdate, TO_CHAR(alertdate, 'DD/MM/YYYY HH24:MI') as alertdate FROM Events WHERE user_id=$1";
+  client.query(queryText, [req.session.user.id], (err, result) => {
+    if(err) {
+      console.log('Error on dashboard loading...' + err);
+      return res.render('dashboard.ejs', { events: {} })
+    }
+    
+    let events = [];
+    for(let i = 0; i < result.rowCount; i++) {
+      events.push({
+        id: result.rows[i].id,
+        title: result.rows[i].title,
+        description: result.rows[i].description || 'none',
+        eventDate: result.rows[i].eventdate,
+        alertDate: result.rows[i].alertdate || 'Not set'
+      })
+    }
+    console.log(events)
+    return res.render('dashboard.ejs', { events: events })
+  })
 })
 
+app.post('/event/:id', (req, res) => {
+  console.log(req.params.id);
+  return res.send('Got it, will delete');
+})
+
+// Event form
 app.get('/new-event', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
   return res.render('new-event.ejs')
+})
+
+app.post('/new-event', (req, res) => {
+  let title = req.body.title;
+  let description = req.body.description;
+  let eventDate = req.body.eventDate;
+  let alertDate = req.body.alertDate;
+  let alertTime = req.body.alertTime;
+  let alertDateTime = (alertDate && alertTime) ?`${alertDate} ${alertTime}` : null;
+
+  // Error handling
+  if (!title || !eventDate) {
+    return res.render('new-event.ejs', { userData: req.body, error: 'Title and Date cannot be empty.' });
+  }
+  if(title.length > 200 || description.length > 300) {
+    return res.render('new-event.ejs', { userData: req.body, error: 'Please keep your input short.' });
+  }
+  if(!isValidDate(eventDate) || (alertDate && alertTime && !isValidDate(alertDate))) {
+    return res.render('new-event.ejs', { userData: req.body, error: 'Invalid date in input.' });
+  }
+  if((alertDate && alertTime && !isValidTime(alertTime))) {
+    return res.render('new-event.ejs', { userData: req.body, error: 'Invalid time in input.' });
+  }
+
+  // Enter valid data into events table.
+  let queryText = 'INSERT INTO Events (user_id, title, description, eventDate, alertDate) VALUES ($1, $2, $3, $4, $5);'
+  let queryValues =  [req.session.user.id, title, description, eventDate, alertDateTime];
+  client.query(queryText, queryValues, (err, result) => {
+    if(err) {
+      console.log(err);
+      return res.render('new-event.ejs', { userData: req.body, error: 'Something wrong happened on the database.' });
+    }
+
+    return res.redirect('/dashboard');
+  })
+
 })
 
 // User Login
@@ -80,7 +143,7 @@ app.post('/login', async (req, res) => {
         firstname: result.rows[0].firstname,
         lastname: result.rows[0].lastname
       }
-      return res.redirect('/')
+      return res.redirect('/dashboard')
     }
     else {
       return res.render('auth/login.ejs', { error: 'Invalid Credentials' })
@@ -150,3 +213,39 @@ app.get('*', (req, res) => {
   res.status(404);
   return res.render('error.ejs');
 })
+
+/* DEPLOYMENT TESTING */
+const nodemailer = require('nodemailer');
+const schedule = require('node-schedule');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { 
+    user: 'yuyuichiu448@gmail.com',
+    pass: 'zfbxlbqkkgnxpvzh'
+  }
+})
+
+const mailOptions = {
+  from: 'Friendly Person <yuyuichiu448@gmail.com>',
+  to: 'yuichiuyu1915@gmail.com',
+  subject: 'Nodemailer test',
+  html: '<h1 style="color:red; font-family: \'time news roman\';">This is sent by an automation.</h1><p>sent by nodemailer</p>'
+}
+
+function sendEmail(client) {
+  client.sendMail(mailOptions, (err, info) => {
+    if(err) {
+      console.log(err)
+    } else {
+      console.log('Email sent successfully:', info)
+    }
+  })
+}
+
+const date = new Date(2022, 2, 19, 10, 0, 0);
+
+const job = schedule.scheduleJob(date, () => {
+  sendEmail(transporter);
+})
+/* END OF DEPLOYMENT TESTING */
