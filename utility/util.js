@@ -42,4 +42,32 @@ const isValidTime = function (input) {
   return true
 }
 
-module.exports = { isValidDate, isValidTime }
+// Send email
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { 
+    user: 'trialalert1915@gmail.com',
+    pass: 'uwceirfchqddixnu'
+  }
+})
+
+const sendEmail = (mailOptions) => {
+  transporter.sendMail(mailOptions, (err, info) => {
+    if(err) { 
+      console.log(err);
+    } else {
+      console.log('Email sent:', info);
+    }
+  })
+}
+
+/* const mailOptions = {
+  from: 'Friendly Person <yuyuichiu448@gmail.com>',
+  to: 'yuichiuyu1915@gmail.com',
+  subject: 'Nodemailer test',
+  html: '<h1 style="color:red; font-family: \'time news roman\';">This is sent by an automation.</h1><p>sent by nodemailer</p>'
+} */
+
+module.exports = { isValidDate, isValidTime, sendEmail }

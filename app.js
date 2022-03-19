@@ -4,7 +4,8 @@ const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const { Pool } = require('pg');
 const hash = require('object-hash');
-const { isValidDate, isValidTime } = require('./utility/util');
+const { isValidDate, isValidTime, sendEmail } = require('./utility/util');
+const scheduler = require('node-schedule');
 require('dotenv').config();
 
 // Connect to database
@@ -65,24 +66,36 @@ app.get('/dashboard', (req, res) => {
       events.push({
         id: result.rows[i].id,
         title: result.rows[i].title,
-        description: result.rows[i].description || 'none',
+        description: result.rows[i].description || '',
         eventDate: result.rows[i].eventdate,
-        alertDate: result.rows[i].alertdate || 'Not set'
+        alertDate: result.rows[i].alertdate || 'Inactive'
       })
     }
-    console.log(events)
+
     return res.render('dashboard.ejs', { events: events })
   })
 })
 
-app.post('/event/:id', (req, res) => {
-  console.log(req.params.id);
-  return res.send('Got it, will delete');
+// Event details page (for editing)
+app.get('/event/:id', (req, res) => {
+  return res.send('TODO: Event detail page.')
 })
 
-// Event form
+// Event delete page (post only)
+app.post('/event/delete/:id', (req, res) => {
+  if(isNaN(req.params.id)) { return res.redirect('/'); }
+  if(!req.session.user) { return res.redirect('/login') }
+
+  client.query(`DELETE FROM Events WHERE id=${+req.params.id} AND user_id=${req.session.user.id};`, (err, result) => {
+    if(err) { console.log(err) }
+    return res.redirect('/dashboard');
+  })
+})
+
+// Event entry form
 app.get('/new-event', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
+  console.log(new Date().toISOString())
   return res.render('new-event.ejs')
 })
 
@@ -108,13 +121,15 @@ app.post('/new-event', (req, res) => {
     return res.render('new-event.ejs', { userData: req.body, error: 'Invalid time in input.' });
   }
 
+  
   // Enter valid data into events table.
-  let queryText = 'INSERT INTO Events (user_id, title, description, eventDate, alertDate) VALUES ($1, $2, $3, $4, $5);'
-  let queryValues =  [req.session.user.id, title, description, eventDate, alertDateTime];
+  let alertDateTimeUTC = new Date(alertDateTime).toISOString();
+  let queryText = 'INSERT INTO Events (user_id, title, description, eventDate, alertDate, alertTimeUTC) VALUES ($1, $2, $3, $4, $5, $6);'
+  let queryValues =  [req.session.user.id, title, description, eventDate, alertDateTime, alertDateTimeUTC];
   client.query(queryText, queryValues, (err, result) => {
     if(err) {
       console.log(err);
-      return res.render('new-event.ejs', { userData: req.body, error: 'Something wrong happened on the database.' });
+      return res.render('new-event.ejs', { userData: req.body, error: 'Something wrong happened on the database. Please try again.' });
     }
 
     return res.redirect('/dashboard');
@@ -214,38 +229,40 @@ app.get('*', (req, res) => {
   return res.render('error.ejs');
 })
 
-/* DEPLOYMENT TESTING */
-const nodemailer = require('nodemailer');
-const schedule = require('node-schedule');
+// Every minutes, get all outstanding alerts with condition of "now() > alertDate"
+// The brackets are correctly placed, but addon is bugged.
+scheduler.scheduleJob('* * * * *', () => {
+  // console.log('Timer checked on', new Date())
+  client.query('SELECT Events.*, Users.lastname, Users.usermail FROM Events INNER JOIN Users ON Users.id=Events.user_id WHERE NOW() >= Events.alertTimeUTC;', (err, result) => {
+    if(err) { console.log(err) }
+    else if(result.rowCount > 0) {
+      for(let i = 0; i < result.rowCount; i++) {
+        sendEmail({
+          from: 'Trial Alert Reminder Bot <trialalert1915@gmail.com>',
+          to: result.rows[0].usermail,
+          subject: `Event Reminder - ${result.rows[i].title}`,
+          html: `<p>Dear ${result.rows[0].lastname},</p>
+          <p>You have set an alert for your event: <b>${result.rows[i].title}</b></p>
+          <p>Event Date: ${result.rows[i].eventdate.toLocaleDateString()}</p>
+          <p>Alert Time: ${result.rows[i].alertdate.toLocaleString()}</p>
+          <br/><br/>
+          <small style='font-style: italic;'>This is an automated email, please do not reply. Should you have enquires, please contact Mr.Yu by yuichiuyu1915@gmail.com</small>
+          <br/><br/>
+          <p>Regards,</p>
+          <p>Trial Alert Group</p>`
+        });
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: { 
-    user: 'yuyuichiu448@gmail.com',
-    pass: 'zfbxlbqkkgnxpvzh'
-  }
-})
-
-const mailOptions = {
-  from: 'Friendly Person <yuyuichiu448@gmail.com>',
-  to: 'yuichiuyu1915@gmail.com',
-  subject: 'Nodemailer test',
-  html: '<h1 style="color:red; font-family: \'time news roman\';">This is sent by an automation.</h1><p>sent by nodemailer</p>'
-}
-
-function sendEmail(client) {
-  client.sendMail(mailOptions, (err, info) => {
-    if(err) {
-      console.log(err)
-    } else {
-      console.log('Email sent successfully:', info)
+        client.query(`UPDATE Events SET alertDate=NULL, alertTimeUTC=NULL WHERE id=${+result.rows[i].id}`, (error, result) => {
+          console.log('Alert is made and thus cleared from the corresponding event.')
+        });
+      }
     }
   })
-}
+});
 
-const date = new Date(2022, 2, 19, 10, 0, 0);
-
-const job = schedule.scheduleJob(date, () => {
-  sendEmail(transporter);
-})
-/* END OF DEPLOYMENT TESTING */
+// Simple Interval to keep Heroku awake
+const https = require('https');
+const keepalive = setInterval(() => {
+  https.get('https://trial-alert-webapp.herokuapp.com/dashboard');
+  https.get('https://yuyuichiu.com');
+}, 300000)

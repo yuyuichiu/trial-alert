@@ -84,7 +84,7 @@ include('includes/navigation') %>
         />
       </div>
       <p class="text-center text-secondary">
-        We will convert time appropriately based on your timezone.
+        You do not need to think about timezone, we handle that in the back.
       </p>
     </div>
 
@@ -92,11 +92,6 @@ include('includes/navigation') %>
       Add event to your dashboard
     </button>
   </form>
-
-  <p>
-    Your timezone is UTC<%- new Date().getTimezoneOffset() < 0 ? '+' : '' %><%-
-    new Date().getTimezoneOffset()/-60 %>
-  </p>
 </main>
 
 <script>

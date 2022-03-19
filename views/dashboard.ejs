@@ -2,17 +2,19 @@
 
 <%- include('includes/navigation') %>
 <main class='container'>
-  <h1>Dashboard</h1>
-  <% if (session.user) { %>
-    <p>Welcome, <%- session.user.firstname %>!</p>
-  <% } else { %>
-    <p>Please log in before proceed.</p>
-    <a href="/login">Login</a>
-  <% } %>
+  <div class="d-flex flex-column align-items-center">
+    <h1>Dashboard</h1>
+    <% if (session.user) { %>
+      <p>Welcome, <%- session.user.firstname %>!</p>
+      <a href="/new-event">
+        <button class="btn btn-dark m-auto">Add event 📅</button>
+      </a>
+    <% } else { %>
+      <p>Please log in before proceed.</p>
+      <a href="/login">Login</a>
+    <% } %>
+  </div>
   
-  <a href="/new-event">
-    <button class="btn btn-dark m-auto">Add event</button>
-  </a>
   <hr />
   <h2 class="text-center">Your events</h2>
   <div class="table-responsive my-3">
@@ -36,7 +38,7 @@
             <td>
               <div class="d-flex">
                 <button type='submit' class="btn btn-sm btn-outline-dark me-2">Edit</button>
-                <form action="/event/<%- events[i].id %>" method="post">
+                <form action="/event/delete/<%- events[i].id %>" method="post">
                   <button type='submit' class="btn btn-sm btn-danger">Remove</button>
                 </form>
               </div>
@@ -45,6 +47,11 @@
         <% } %>
       </tbody>
     </table>
+
+    
+    <% if(events.length === 0) { %>
+        <h2 style="font-size:20px; color:gray;text-align:center;">You don't have events now, perhaps add some?</h2>
+    <% } %>
   </div>
 </main>
 
