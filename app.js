@@ -182,7 +182,7 @@ app.post('/register', (req, res) => {
   let mail = req.body.usermail;
   let password = req.body.password;
   let confirmPassword = req.body['confirm-pw'];
-  let userData = { firstname, lastname, mail }
+  let userData = { firstname, lastname, mail };
 
   // Reject on form input errors
   let emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
