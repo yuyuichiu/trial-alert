@@ -84,7 +84,7 @@ app.get('/event/:id', (req, res) => {
 // Event delete page (post only)
 app.post('/event/delete/:id', (req, res) => {
   if(isNaN(req.params.id)) { return res.redirect('/'); }
-  if(!req.session.user) { return res.redirect('/login') }
+  if(!req.session.user) { return res.redirect('/login'); }
 
   client.query(`DELETE FROM Events WHERE id=${+req.params.id} AND user_id=${req.session.user.id};`, (err, result) => {
     if(err) { console.log(err) }
