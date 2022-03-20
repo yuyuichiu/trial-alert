@@ -5,7 +5,7 @@ include('includes/navigation') %>
     <div class="alert alert-danger"><%- error %></div>
   <% } %>
   <a href="/dashboard" class="text-secondary">Back to Dashboard</a>
-  <form action="/new-event" method="post" autocomplete="off" class="eventForm">
+  <form action="/new-event" method="post" autocomplete="off" class="eventForm" id="new-event">
     <h2 class="text-center mb-3">📅 Add an event 📅</h2>
     <div class="form-group row mb-2">
       <label for="title" class="col-sm-3 col-form-label">Title</label>
@@ -88,6 +88,8 @@ include('includes/navigation') %>
       </p>
     </div>
 
+    <input type="hidden" name='isoTime' id="isoTime" value=''/>
+
     <button type="submit" class="btn btn-dark mx-auto">
       Add event to your dashboard
     </button>
@@ -95,19 +97,34 @@ include('includes/navigation') %>
 </main>
 
 <script>
-  let timezoneOffset = new Date().getTimezoneOffset();
+  let eventForm = document.getElementById("new-event")
   let alertCheckbox = document.querySelector("#alert");
-  let alertConfig = document.querySelector("#alertConfig");
+  let alertDate = document.querySelector("#alertDate");
+  let alertTime = document.querySelector("#alertTime");
+  let isoInput = document.getElementById("isoTime");
 
   document.addEventListener("input", () => {
     if (alertCheckbox.checked) {
-      document.querySelector("#alertDate").disabled = false;
-      document.querySelector("#alertTime").disabled = false;
+      alertDate.disabled = false;
+      alertTime.disabled = false;
     } else {
-      document.querySelector("#alertDate").disabled = true;
-      document.querySelector("#alertTime").disabled = true;
+      alertDate.disabled = true;
+      alertTime.disabled = true;
     }
   });
+
+  eventForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    try{
+      let rawDateTime = new Date(`${alertDate.value} ${alertTime.value}`);
+      let isoDateTime = rawDateTime.toISOString();
+      isoInput.value = isoDateTime;
+      eventForm.submit();
+    } catch (error) {
+      alertDate.focus();
+      console.log(error);
+    }
+  })
 </script>
 
 <%- include('includes/footer') %>

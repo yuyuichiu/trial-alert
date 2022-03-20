@@ -95,7 +95,6 @@ app.post('/event/delete/:id', (req, res) => {
 // Event entry form
 app.get('/new-event', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
-  console.log(new Date().toISOString())
   return res.render('new-event.ejs')
 })
 
@@ -105,6 +104,7 @@ app.post('/new-event', (req, res) => {
   let eventDate = req.body.eventDate;
   let alertDate = req.body.alertDate;
   let alertTime = req.body.alertTime;
+  let isoTime = req.body.isoTime;
   let alertDateTime = (alertDate && alertTime) ?`${alertDate} ${alertTime}` : null;
 
   // Error handling
@@ -120,12 +120,10 @@ app.post('/new-event', (req, res) => {
   if((alertDate && alertTime && !isValidTime(alertTime))) {
     return res.render('new-event.ejs', { userData: req.body, error: 'Invalid time in input.' });
   }
-
   
   // Enter valid data into events table.
-  let alertDateTimeUTC = new Date(alertDateTime).toISOString();
   let queryText = 'INSERT INTO Events (user_id, title, description, eventDate, alertDate, alertTimeUTC) VALUES ($1, $2, $3, $4, $5, $6);'
-  let queryValues =  [req.session.user.id, title, description, eventDate, alertDateTime, alertDateTimeUTC];
+  let queryValues =  [req.session.user.id, title, description, eventDate, alertDateTime, isoTime];
   client.query(queryText, queryValues, (err, result) => {
     if(err) {
       console.log(err);
@@ -250,10 +248,10 @@ scheduler.scheduleJob('* * * * *', () => {
           <br/><br/>
           <p>Regards,</p>
           <p>Trial Alert Group</p>`
-        });
-
-        client.query(`UPDATE Events SET alertDate=NULL, alertTimeUTC=NULL WHERE id=${+result.rows[i].id}`, (error, result) => {
-          console.log('Alert is made and thus cleared from the corresponding event.')
+        }, () => {
+          client.query(`UPDATE Events SET alertDate=NULL, alertTimeUTC=NULL WHERE id=${+result.rows[i].id}`, (error, result) => {
+            console.log('Alert is made and thus cleared from the corresponding event.')
+          });
         });
       }
     }
@@ -264,5 +262,5 @@ scheduler.scheduleJob('* * * * *', () => {
 const https = require('https');
 const keepalive = setInterval(() => {
   https.get('https://trial-alert-webapp.herokuapp.com/dashboard');
-  https.get('https://yuyuichiu.com');
+  https.get('https://yuyuichiu.com/blog');
 }, 300000)

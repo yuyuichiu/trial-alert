@@ -53,12 +53,13 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-const sendEmail = (mailOptions) => {
+const sendEmail = (mailOptions, callback) => {
   transporter.sendMail(mailOptions, (err, info) => {
     if(err) { 
       console.log(err);
     } else {
       console.log('Email sent:', info);
+      callback(info)
     }
   })
 }

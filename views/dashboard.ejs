@@ -52,14 +52,10 @@
     <% if(events.length === 0) { %>
         <h2 style="font-size:20px; color:gray;text-align:center;">You don't have events now, perhaps add some?</h2>
     <% } %>
-
-    <div id="isotime"></div>
   </div>
 </main>
 
 <script>
-  let isotime = document.getElementById('isotime')
 
-  isotime.innerHTML = new Date().toISOString();
 </script>
 <%- include('includes/footer') %>
