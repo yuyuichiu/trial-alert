@@ -1,5 +1,5 @@
-<%- include('includes/header', { title: 'Add Event'}) %> <%-
-include('includes/navigation') %>
+<%- include('includes/header', { title: 'Add Event'}) %>
+<%- include('includes/navigation') %>
 <main class="container">
   <% if(typeof error !== 'undefined') { %>
     <div class="alert alert-danger"><%- error %></div>
@@ -116,9 +116,11 @@ include('includes/navigation') %>
   eventForm.addEventListener("submit", (e) => {
     e.preventDefault();
     try{
-      let rawDateTime = new Date(`${alertDate.value} ${alertTime.value}`);
-      let isoDateTime = rawDateTime.toISOString();
-      isoInput.value = isoDateTime;
+      if(alertCheckbox.checked){
+        let rawDateTime = new Date(`${alertDate.value} ${alertTime.value}`);
+        let isoDateTime = rawDateTime.toISOString();
+        isoInput.value = isoDateTime;
+      }
       eventForm.submit();
     } catch (error) {
       alertDate.focus();

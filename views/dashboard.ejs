@@ -3,7 +3,6 @@
 <%- include('includes/navigation') %>
 <main class='container'>
   <div class="d-flex flex-column align-items-center">
-    <h1>Dashboard</h1>
     <% if (session.user) { %>
       <p>Welcome, <%- session.user.firstname %>!</p>
       <a href="/new-event">
@@ -21,18 +20,18 @@
     <table class="table table-hover">
       <thead>
         <tr>
-          <th>Title</th>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Alert Time</th>
-          <th>Action</th>
+          <th style="width:10%;">Date</th>
+          <th style="max-width:30%;">Title</th>
+          <th style="width:30%;">Description</th>
+          <th style="width:15%;">Alert Time</th>
+          <th style="width:15%;">Action</th>
         </tr>
       </thead>
       <tbody>
         <% for(let i = 0; i < events.length; i++) { %>
           <tr>
-            <td><%- events[i].title %></td>
             <td><%- events[i].eventDate %></td>
+            <td><%- events[i].title %></td>
             <td><%- events[i].description %></td>
             <td><%- events[i].alertDate %></td>
             <td>

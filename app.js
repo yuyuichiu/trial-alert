@@ -54,7 +54,7 @@ app.use(function(req, res, next) {
 app.get('/dashboard', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
 
-  let queryText = "SELECT id, title, description, TO_CHAR(eventdate, 'DD/MM/YYYY') as eventdate, TO_CHAR(alertdate, 'DD/MM/YYYY HH24:MI') as alertdate FROM Events WHERE user_id=$1";
+  let queryText = "SELECT id, title, description, TO_CHAR(eventdate, 'DD/MM/YYYY') as eventdate, TO_CHAR(alertdate, 'DD/MM/YYYY HH24:MI') as alertdate FROM Events WHERE user_id=$1 ORDER BY alertTimeUTC ASC";
   client.query(queryText, [req.session.user.id], (err, result) => {
     if(err) {
       console.log('Error on dashboard loading...' + err);
@@ -104,7 +104,7 @@ app.post('/new-event', (req, res) => {
   let eventDate = req.body.eventDate;
   let alertDate = req.body.alertDate;
   let alertTime = req.body.alertTime;
-  let isoTime = req.body.isoTime;
+  let isoTime = req.body.isoTime || null;
   let alertDateTime = (alertDate && alertTime) ?`${alertDate} ${alertTime}` : null;
 
   // Error handling
@@ -236,7 +236,7 @@ scheduler.scheduleJob('* * * * *', () => {
     else if(result.rowCount > 0) {
       for(let i = 0; i < result.rowCount; i++) {
         sendEmail({
-          from: 'Trial Alert Reminder Bot <trialalert1915@gmail.com>',
+          from: 'Trial Alert Bot <trialalert1915@gmail.com>',
           to: result.rows[0].usermail,
           subject: `Event Reminder - ${result.rows[i].title}`,
           html: `<p>Dear ${result.rows[0].lastname},</p>
