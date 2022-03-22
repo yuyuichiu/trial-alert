@@ -76,9 +76,57 @@ app.get('/dashboard', (req, res) => {
   })
 })
 
-// Event details page (for editing)
+// Event details page (to edit existing events)
 app.get('/event/:id', (req, res) => {
-  return res.send('TODO: Event detail page.')
+  if(!req.session.user) { return res.redirect('/login') }
+  if(typeof(+req.params.id) !== 'number'){ return res.redirect('/') }
+
+  let queryText = `
+    SELECT title, description, 
+    TO_CHAR(eventDate, 'YYYY-MM-DD') AS eventdate, 
+    TO_CHAR(alertDate, 'YYYY-MM-DD') AS alertdate,
+    TO_CHAR(alertDate, 'HH24:MI') AS alerttime
+    FROM Events WHERE id=$1 AND user_id=$2
+  `;
+  client.query(queryText, [req.params.id, req.session.user.id], (error, result) => {
+    if(error) { console.log(error) }
+    if(result.rowCount === 0) { return res.redirect('/dashboard') }
+    return res.render('event.ejs', { eventData: result.rows[0], eventID: req.params.id });
+  })
+})
+
+app.post('/event/:id', (req, res) => {
+  let title = req.body.title;
+  let description = req.body.description;
+  let eventDate = req.body.eventDate;
+  let alertDate = req.body.alertDate;
+  let alertTime = req.body.alertTime;
+  let isoTime = req.body.isoTime || null;
+  let alertDateTime = (alertDate && alertTime) ?`${alertDate} ${alertTime}` : null;
+
+  // Error handling
+  if (!title || !eventDate) {
+    return res.render(`event.ejs`, { eventData: req.body, eventID: req.params.id, error: 'Title and Date cannot be empty.' });
+  }
+  if(title.length > 200 || description.length > 300) {
+    return res.render(`event.ejs`, { eventData: req.body, eventID: req.params.id, error: 'Please keep your input short.' });
+  }
+
+  // Enter valid data into events table.
+  let queryText = `
+    UPDATE Events SET
+    title=$1, description=$2, eventDate=$3, alertDate=$4, alertTimeUTC=$5
+    WHERE id=$6 AND user_id=$7
+  `;
+  let queryValues =  [title, description, eventDate, alertDateTime, isoTime, req.params.id, req.session.user.id];
+  client.query(queryText, queryValues, (err, result) => {
+    if(err) {
+      console.log(err);
+      return res.render(`event.ejs`, { eventData: req.body, eventID: req.params.id, error: 'Something wrong happened on the database, please try again' });
+    }
+
+    return res.redirect('/dashboard');
+  })
 })
 
 // Event delete page (post only)
@@ -113,12 +161,6 @@ app.post('/new-event', (req, res) => {
   }
   if(title.length > 200 || description.length > 300) {
     return res.render('new-event.ejs', { userData: req.body, error: 'Please keep your input short.' });
-  }
-  if(!isValidDate(eventDate) || (alertDate && alertTime && !isValidDate(alertDate))) {
-    return res.render('new-event.ejs', { userData: req.body, error: 'Invalid date in input.' });
-  }
-  if((alertDate && alertTime && !isValidTime(alertTime))) {
-    return res.render('new-event.ejs', { userData: req.body, error: 'Invalid time in input.' });
   }
   
   // Enter valid data into events table.
@@ -250,7 +292,8 @@ scheduler.scheduleJob('* * * * *', () => {
           <p>Trial Alert Group</p>`
         }, () => {
           client.query(`UPDATE Events SET alertDate=NULL, alertTimeUTC=NULL WHERE id=${+result.rows[i].id}`, (error, result) => {
-            console.log('Alert is made and thus cleared from the corresponding event.')
+            if(error) { console.log(error) }
+            else { console.log('Alert is made and thus cleared from the corresponding event.') }
           });
         });
       }

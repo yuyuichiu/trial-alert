@@ -3,17 +3,20 @@
   <ul class='navbar-nav ms-auto me-3'>
     <% if(session.user) { %>
       <li class="nav-item active">
-        <a class="nav-link <% if(typeof current !== 'undefined' && current === 'dashboard') {'color-red'}%>" href="/dashboard">Dashboard</a>
+        <a class="nav-link <%- (typeof current !== 'undefined' && current === 'dashboard') && 'fw-bold' %>" href="/dashboard">Dashboard</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="/hello">test</a>
+        <a class="nav-link <%- (typeof current !== 'undefined' && current === 'new-event') && 'fw-bold' %>" href="/new-event">Add Event</a>
       </li>
       <li class="nav-item active">
         <a class="nav-link text-danger" href="/logout">Logout</a>
       </li>
     <% } else { %>
       <li class="nav-item active">
-        <a class="nav-link" href="/login"><b>Login</b></a>
+        <a class="nav-link text-primary" href="/login">Login</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="/register">Register</a>
       </li>
     <% } %>
   </ul>

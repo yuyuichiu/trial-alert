@@ -1,6 +1,6 @@
 <%- include('includes/header', {title: 'Dashboard'}) %>
 
-<%- include('includes/navigation') %>
+<%- include('includes/navigation', {current: 'dashboard'}) %>
 <main class='container'>
   <div class="d-flex flex-column align-items-center">
     <% if (session.user) { %>
@@ -36,7 +36,9 @@
             <td><%- events[i].alertDate %></td>
             <td>
               <div class="d-flex">
-                <button type='submit' class="btn btn-sm btn-outline-dark me-2">Edit</button>
+                <a href="/event/<%- events[i].id %>">
+                  <button type='submit' class="btn btn-sm btn-outline-dark me-2">Edit</button>
+                </a>
                 <form action="/event/delete/<%- events[i].id %>" method="post">
                   <button type='submit' class="btn btn-sm btn-danger">Remove</button>
                 </form>

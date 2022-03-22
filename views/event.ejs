@@ -1,12 +1,13 @@
-<%- include('includes/header', { title: 'Add Event'}) %>
-<%- include('includes/navigation', { current: 'new-event' }) %>
+<%- include('includes/header', { title: 'Edit Event' }) %>
+<%- include('includes/navigation.ejs', { current: 'event' }) %>
+
 <main class="container">
   <% if(typeof error !== 'undefined') { %>
     <div class="alert alert-danger"><%- error %></div>
   <% } %>
   <a href="/dashboard" class="text-secondary">Back to Dashboard</a>
-  <form action="/new-event" method="post" autocomplete="off" class="eventForm" id="new-event">
-    <h2 class="text-center mb-3">📅 Add an event 📅</h2>
+  <form action="/event/<%- eventID %>" method="post" autocomplete="off" class="eventForm" id="event">
+    <h2 class="text-center mb-3">🔧 Edit event 📅</h2>
     <div class="form-group row mb-2">
       <label for="title" class="col-sm-3 col-form-label">Title</label>
       <div class="col-sm-9">
@@ -15,7 +16,7 @@
           name="title"
           id="title"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.title } %>"
+          value="<%- typeof eventData !== 'undefined' && eventData.title %>"
           required
           autofocus
         />
@@ -33,7 +34,7 @@
           id="descirption"
           placeholder="(optional)"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.description } %>"
+          value="<%- typeof eventData !== 'undefined' && eventData.description %>"
         />
       </div>
     </div>
@@ -46,14 +47,14 @@
           name="eventDate"
           id="eventDate"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.eventDate } %>"
+          value="<%- typeof eventData !== 'undefined' && eventData.eventdate %>"
           required
         />
       </div>
     </div>
 
     <div class="form-group mb-2">
-      <input type="checkbox" id="alert" />
+      <input type="checkbox" id="alert" <%- (typeof eventData !== 'undefined' && eventData.alertdate !== null) ? 'checked' : '' %>/>
       <label for="alert">📧 Alert me with email</label>
     </div>
 
@@ -65,7 +66,7 @@
           name="alertDate"
           id="alertDate"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.alertDate }%>"
+          value="<%- typeof eventData !== 'undefined' && eventData.alertdate %>"
           disabled
           required
         />
@@ -78,7 +79,7 @@
           name="alertTime"
           id="alertTime"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.alertTime } %>"
+          value="<%- typeof eventData !== 'undefined' && eventData.alerttime %>"
           disabled
           required
         />
@@ -91,19 +92,19 @@
     <input type="hidden" name='isoTime' id="isoTime" value=''/>
 
     <button type="submit" class="btn btn-dark mx-auto">
-      Add event to your dashboard
+      Edit Event
     </button>
   </form>
 </main>
 
 <script>
-  let eventForm = document.getElementById("new-event")
+  let eventForm = document.getElementById("event")
   let alertCheckbox = document.querySelector("#alert");
   let alertDate = document.querySelector("#alertDate");
   let alertTime = document.querySelector("#alertTime");
   let isoInput = document.getElementById("isoTime");
 
-  document.addEventListener("input", () => {
+  function alertSwitch() {
     if (alertCheckbox.checked) {
       alertDate.disabled = false;
       alertTime.disabled = false;
@@ -111,9 +112,12 @@
       alertDate.disabled = true;
       alertTime.disabled = true;
     }
-  });
+  }
 
-  eventForm.addEventListener("submit", (e) => {
+  window.addEventListener('load', alertSwitch)
+  document.addEventListener("input", alertSwitch);
+
+  eventForm.addEventListener('submit', (e) => {
     e.preventDefault();
     try{
       if(alertCheckbox.checked){
