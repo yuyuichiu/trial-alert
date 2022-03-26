@@ -15,7 +15,7 @@
           name="title"
           id="title"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.title } %>"
+          value="<%- typeof userData !== 'undefined' ? userData.title : ''  %>"
           required
           autofocus
         />
@@ -33,7 +33,7 @@
           id="descirption"
           placeholder="(optional)"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.description } %>"
+          value="<%- typeof userData !== 'undefined' ? userData.description : ''  %>"
         />
       </div>
     </div>
@@ -46,7 +46,7 @@
           name="eventDate"
           id="eventDate"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.eventDate } %>"
+          value="<%- typeof userData !== 'undefined' ? userData.eventDate : ''  %>"
           required
         />
       </div>
@@ -65,7 +65,7 @@
           name="alertDate"
           id="alertDate"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.alertDate }%>"
+          value="<%- typeof userData !== 'undefined' ? userData.alertDate : '' %>"
           disabled
           required
         />
@@ -78,7 +78,7 @@
           name="alertTime"
           id="alertTime"
           class="form-control"
-          value="<%- if(typeof userData !== 'undefined') { userData.alertTime } %>"
+          value="<%- typeof userData !== 'undefined' ? userData.alertTime : ''  %>"
           disabled
           required
         />

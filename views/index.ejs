@@ -2,8 +2,23 @@
 
 <%- include('includes/navigation') %>
 <main class='container'>
-  <h1>Forgetting Things?</h1>
-  <p>A web application that reminds you of important deadlines.</p>
+  <div class='intro row'>
+    <div class="col-12 col-md-6 my-auto">
+      <div class="intro-box">
+        <h1>Forgetting Things?</h1>
+        <p>A web application that reminds you of important deadlines.</p>
+  
+        <a href="/dashboard">
+          <button class="btn btn-custom">Try now!</button>
+        </a>
+      </div>
+    </div>
+
+    <div class="intro-img col-12 col-md-6">
+      <img src="https://yuyuichiu-personal.s3.us-west-1.amazonaws.com/trial_alert.webp" alt='Sample email alert'/>
+    </div>
+  </div>
 </main>
+<a href='https://www.yuyuichiu.com' class="text-invisible">my website</a>
 
 <%- include('includes/footer') %>
