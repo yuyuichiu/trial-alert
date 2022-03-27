@@ -20,20 +20,20 @@
     <table id='event-table' class="table table-hover">
       <thead>
         <tr>
-          <th onClick='sortTable(0)' style="cursor: pointer; width:10%;">Date</th>
+          <th onClick='sortTable(0, "date")' style="cursor: pointer; width:10%;">Date</th>
           <th onClick='sortTable(1)' style="cursor: pointer; max-width:30%;">Title</th>
           <th onClick='sortTable(2)' style="cursor: pointer; width:30%;">Description</th>
-          <th onClick='sortTable(3)' style="cursor: pointer; width:15%;">Alert Time</th>
+          <th onClick='sortTable(3, "date")' style="cursor: pointer; width:15%;">Alert Time</th>
           <th style="width:15%;">Action</th>
         </tr>
       </thead>
       <tbody>
         <% for(let i = 0; i < events.length; i++) { %>
           <tr>
-            <td><%- events[i].eventDate %></td>
+            <td data-raw="<%- events[i].rawEvent %>"><%- events[i].eventDate %></td>
             <td><%- events[i].title %></td>
             <td><%- events[i].description %></td>
-            <td><%- events[i].alertDate %></td>
+            <td data-raw="<%- events[i].rawAlert %>"><%- events[i].alertDate %></td>
             <td>
               <div class="d-flex">
                 <a href="/event/<%- events[i].id %>">
@@ -57,19 +57,42 @@
 </main>
 
 <script>
-  function sortTable(n) {
-    let table = document.getElementById('event-table');
-    let rows = table.rows;
-    console.log(table.rows);
+  let isDesc = false;
 
-    // Loop through every rows (expect header)
-    for(let i = 1; i < table.rows.length; i++) {
-      console.log(`Row ${i}: ${table.rows[i].getElementsByTagName('td')[n].innerHTML}`)
+  function sortTable(n, mode) {
+    let rows = document.getElementById('event-table').rows;
 
-      for(let j = i+1; j < table.rows.length; j++) {
-        rows[i].parentNode.insertBefore(rows[i+1], rows[i])
+    for(let i = 1; i < (rows.length-1); i++) {
+      let pos = i;
+
+      if(mode === 'date') {
+        for(let j = i+1; j < rows.length; j++) {
+          let currentValue = new Date(rows[pos].getElementsByTagName('td')[n].dataset.raw);
+          let recordValue = new Date(rows[j].getElementsByTagName('td')[n].dataset.raw);
+          if((isDesc && recordValue > currentValue) || (!isDesc && recordValue < currentValue)) { 
+            pos = j;
+          }
+        }
+      } else {
+        for(let j = i+1; j < rows.length; j++) {
+          let currentValue = rows[pos].getElementsByTagName('td')[n].innerHTML.toLowerCase();
+          let recordValue = rows[j].getElementsByTagName('td')[n].innerHTML.toLowerCase();
+          if((isDesc && recordValue > currentValue) || (!isDesc && recordValue < currentValue)) {
+            pos = j;
+          }
+        }
       }
+
+      let temp = document.createElement('span');
+      rows[i].parentNode.insertBefore(temp, rows[i]);
+      rows[pos].parentNode.insertBefore(rows[i], rows[pos]);
+      rows[pos].parentNode.insertBefore(rows[pos], temp);
+      temp.remove();
+
+      rows = document.getElementById('event-table').rows;
     }
+
+    isDesc = !isDesc;
   }
 </script>
 <%- include('includes/footer') %>

@@ -1,0 +1,46 @@
+<%- include('includes/header', {title: 'TEST'}) %>
+
+<%- include('includes/navigation') %>
+<main class='container'>
+  <div id="box1" class='box' style="margin-bottom: 3px; background-color: aliceblue;">400</div>
+  <div id="box2" class='box' style="margin-bottom: 3px; background-color: paleturquoise;">500</div>
+  <div id="box3" class='box' style="margin-bottom: 3px; background-color: peru;">300</div>
+  <div id="box4" class='box' style="margin-bottom: 3px; background-color: palevioletred;">200</div>
+  <div id="box5" class='box' style="margin-bottom: 3px; background-color: palegoldenrod;">100</div>
+</main>
+
+<script>
+  let main = document.querySelector('main');
+  let isDesc = true;
+  
+  document.querySelectorAll('.box').forEach((node) => {
+    node.innerHTML = Math.floor(Math.random() * 10000);
+    
+    // Selection sort
+    node.addEventListener('click', () => {
+      let boxes = document.querySelectorAll('.box');
+
+      for(let i = 0; i < (boxes.length-1); i++) {
+        // Find lowest / highest
+        let pos = i;
+        for(let j = i+1; j < boxes.length; j++) {
+          if((isDesc && +boxes[j].innerHTML < +boxes[pos].innerHTML) || (!isDesc && +boxes[j].innerHTML > +boxes[pos].innerHTML)) {
+            pos = j;
+          }
+        }
+
+        // put lowest/highest to the left & move on to next iteration
+        let temp = document.createElement('span');
+        boxes[pos].before(temp);
+        boxes[i].before(boxes[pos]);
+        temp.replaceWith(boxes[i]);
+
+        // Redefine boxes each iteration to refresh array to new orders
+        boxes = document.querySelectorAll('.box');
+      }
+
+      isDesc = !isDesc;
+    })
+  })
+</script>
+<%- include('includes/footer') %>

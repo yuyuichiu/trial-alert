@@ -54,7 +54,7 @@ app.use(function(req, res, next) {
 app.get('/dashboard', (req, res) => {
   if(!req.session.user) { return res.redirect('/login') }
 
-  let queryText = "SELECT id, title, description, TO_CHAR(eventdate, 'DD/MM/YYYY') as eventdate, TO_CHAR(alertdate, 'DD/MM/YYYY HH24:MI') as alertdate FROM Events WHERE user_id=$1 ORDER BY alertTimeUTC ASC";
+  let queryText = "SELECT id, title, description, eventdate as rawevent, TO_CHAR(eventdate, 'DD/MM/YYYY') as eventdate, TO_CHAR(alertdate, 'DD/MM/YYYY HH24:MI') as alertdate, alertDate as rawalert FROM Events WHERE user_id=$1 ORDER BY alertTimeUTC ASC";
   client.query(queryText, [req.session.user.id], (err, result) => {
     if(err) {
       console.log('Error on dashboard loading...' + err);
@@ -68,7 +68,9 @@ app.get('/dashboard', (req, res) => {
         title: result.rows[i].title,
         description: result.rows[i].description || '',
         eventDate: result.rows[i].eventdate,
-        alertDate: result.rows[i].alertdate || 'Inactive'
+        alertDate: result.rows[i].alertdate || 'Inactive',
+        rawEvent: result.rows[i].rawevent || '12-31-2099',
+        rawAlert: result.rows[i].rawalert || '12-31-2099',
       })
     }
 
@@ -256,6 +258,11 @@ app.post('/register', (req, res) => {
       return res.redirect('/login?alert=Account%20Created')  // %20 === " "
     })
   })
+})
+
+// TESTING ROUTE
+app.get('/test', (req, res) => {
+  return res.render('test.ejs')
 })
 
 // Home page
