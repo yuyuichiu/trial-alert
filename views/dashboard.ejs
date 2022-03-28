@@ -20,10 +20,10 @@
     <table id='event-table' class="table table-hover">
       <thead>
         <tr>
-          <th onClick='sortTable(0, "date")' style="cursor: pointer; width:10%;">Date</th>
-          <th onClick='sortTable(1)' style="cursor: pointer; max-width:30%;">Title</th>
-          <th onClick='sortTable(2)' style="cursor: pointer; width:30%;">Description</th>
-          <th onClick='sortTable(3, "date")' style="cursor: pointer; width:15%;">Alert Time</th>
+          <th data-order='false' onClick='sortTable(0, "date")' style="user-select: none; cursor: pointer; width:10%;">Date</th>
+          <th data-order='false' onClick='sortTable(1)' style="user-select: none; cursor: pointer; max-width:30%;">Title</th>
+          <th data-order='false' onClick='sortTable(2)' style="user-select: none; cursor: pointer; width:30%;">Description</th>
+          <th data-order='false' onClick='sortTable(3, "date")' style="user-select: none; cursor: pointer; width:15%;">Alert Time</th>
           <th style="width:15%;">Action</th>
         </tr>
       </thead>
@@ -57,12 +57,14 @@
 </main>
 
 <script>
-  let isDesc = false;
-
   function sortTable(n, mode) {
     let rows = document.getElementById('event-table').rows;
+    let order = rows[0].getElementsByTagName('th')[n].dataset.order;
+    let isDesc = (order === 'true');
 
+    // Selection sort on table ordering
     for(let i = 1; i < (rows.length-1); i++) {
+      // Find the lowest/highest of each iteration
       let pos = i;
 
       if(mode === 'date') {
@@ -83,16 +85,19 @@
         }
       }
 
-      let temp = document.createElement('span');
+      // Swap the lowest/highest with the I-th element
+      let temp = document.createElement('div');
       rows[i].parentNode.insertBefore(temp, rows[i]);
-      rows[pos].parentNode.insertBefore(rows[i], rows[pos]);
+      rows[i].parentNode.insertBefore(rows[i], rows[pos]);
       rows[pos].parentNode.insertBefore(rows[pos], temp);
       temp.remove();
 
+      // Refresh rows with newest order, necessary to make the sort viable
       rows = document.getElementById('event-table').rows;
     }
 
-    isDesc = !isDesc;
+    // Reverse internal order after sorting is done
+    rows[0].getElementsByTagName('th')[n].dataset.order = (order !== 'true');
   }
 </script>
 <%- include('includes/footer') %>
