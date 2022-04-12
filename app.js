@@ -290,8 +290,9 @@ scheduler.scheduleJob('* * * * *', () => {
           subject: `Event Reminder - ${result.rows[i].title}`,
           html: `<p>Dear ${result.rows[0].lastname},</p>
           <p>You have set an alert for your event: <b>${result.rows[i].title}</b></p>
-          <p>Event Date: ${result.rows[i].eventdate.toLocaleDateString()}</p>
-          <p>Alert Time: ${result.rows[i].alertdate.toLocaleString()}</p>
+          <p>Event Date: ${result.rows[i].eventdate.toLocaleDateString('en-GB')}</p>
+          <p>Alert Time: ${result.rows[i].alertdate.toLocaleString('en-GB')}</p>
+          ${result.rows[i].description && ("<p>Description: " + result.rows[i].description + "</p>")}
           <br/><br/>
           <small style='font-style: italic;'>This is an automated email, please do not reply. Should you have enquires, please contact Mr.Yu by yuichiuyu1915@gmail.com</small>
           <br/><br/>
