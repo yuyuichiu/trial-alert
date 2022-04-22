@@ -309,9 +309,9 @@ scheduler.scheduleJob('* * * * *', () => {
   })
 });
 
-// Simple Interval to keep Heroku awake
+/* Simple Interval to keep Heroku awake
 const https = require('https');
 const keepalive = setInterval(() => {
   https.get('https://trial-alert-webapp.herokuapp.com/dashboard');
   https.get('https://yuyuichiu.com/blog');
-}, 300000)
+}, 300000) */
