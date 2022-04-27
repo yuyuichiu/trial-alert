@@ -1,6 +1,6 @@
-<nav class='navbar navbar-expand navbar-light bg-light mb-3 custom-navbar'>
+<nav class='navbar navbar-expand mb-3 custom-navbar <%- typeof transparent !== 'undefined' ? 'transparent' : 'navbar-light' %>'>
   <div class='container'>
-    <a class='navbar-brand' href='/'>Trial Alert</a>
+    <a class='navbar-brand fw-bold' href='/'>Trial Alert</a>
     <ul class='navbar-nav ms-auto'>
       <% if(session.user) { %>
         <li class="nav-item active">
@@ -10,11 +10,11 @@
           <a class="nav-link <%- (typeof current !== 'undefined' && current === 'new-event') && 'fw-bold' %>" href="/new-event">Add Event</a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link text-danger" href="/logout">Logout</a>
+          <a class="nav-link <%- typeof transparent === 'undefined' && 'text-danger' %>" href="/logout">Logout</a>
         </li>
       <% } else { %>
         <li class="nav-item active">
-          <a class="nav-link text-primary" href="/login">Login</a>
+          <a class="nav-link <%- typeof transparent === 'undefined' && 'text-primary' %>" href="/login">Login</a>
         </li>
         <li class="nav-item active">
           <a class="nav-link" href="/register">Register</a>

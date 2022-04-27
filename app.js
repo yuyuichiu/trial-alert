@@ -39,7 +39,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { 
     // expiration time, in ms
-    maxAge: 30 * 24 * 60 * 60 * 1000
+    maxAge: 1 * 24 * 60 * 60 * 1000
   }
 }))
 
@@ -309,9 +309,9 @@ scheduler.scheduleJob('* * * * *', () => {
   })
 });
 
-/* Simple Interval to keep Heroku awake
+// Simple Interval to keep Heroku awake
 const https = require('https');
 const keepalive = setInterval(() => {
   https.get('https://trial-alert-webapp.herokuapp.com/dashboard');
   https.get('https://yuyuichiu.com/blog');
-}, 300000) */
+}, 3600000)

@@ -1,11 +1,15 @@
 <%- include('includes/header', { title: '🔔 Trial Alert' }) %>
 
-<%- include('includes/navigation') %>
+<%- include('includes/navigation', { transparent: true }) %>
 <main class='container'>
+  <img src="/clock5.jpg" class='bg-img'/>
+  <div class="overlay"></div>
+
   <div class='intro row'>
     <div class="col-12 col-md-6 my-auto">
       <div class="intro-box">
         <h1>Forgetting Things?</h1>
+        <h2>Remind yourself!</h2>
         <p style="margin-bottom: 0.3em;">Trial Alert reminds your important moments with scheduled emails.</p>
         <p>No downloads required, try it now!</p>
   
@@ -17,6 +21,7 @@
 
     <div class="intro-img col-12 col-md-6">
       <img src="https://yuyuichiu-personal.s3.us-west-1.amazonaws.com/trial_alert.webp" alt='Sample email alert'/>
+      <p class="hover-me">Hover me</p>
     </div>
   </div>
 </main>
