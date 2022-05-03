@@ -1,17 +1,19 @@
-# Trial Alert
+# Trial Alert - remind yourself!
 #### Video Demo:  <URL HERE>
 #### Description:
-  Did you have an experience of entering into free trial and wanted to *be reminded* you to review your subscription near the payment start date? Or just anything you just want to *be reminded*? Trial alert is a download-less web application that remind you of your important moments with scheduled emails. **No marketing email shenanigans, just clean email reminders upon your request**. Let explore how it works!
+  Did you have an experience of entering into free trial and wanted to *be reminded* near the payment start date to review your subscription? Or any events that you want to *be reminded*? Trial alert is a download-less web application that remind you of your important moments with scheduled emails. **No marketing email shenanigans, just clean email reminders upon your request**. Let explore how it works!
+  
+  Live website: <a href='https://trial-alert-webapp.herokuapp.com/' target='_blank' rel='noreferrer'>https://trial-alert-webapp.herokuapp.com/ (Open on new tab)</a>
   
 #### Getting Started
-  To get started, register an account with your email address. You will need that email to login into your account.
-  We do not send non-alert related emails and your credenticals is protected by SHA256 hash function.
+  To get started, register an account with your email address. You will need that email later to login into your account.
+  We promise to not send non-alert related emails and your credentials is protected by SHA256 hash function.
   
   After registration and logging into your account, you will be directed into **dashboard**. This is the place where your events and alerts are displayed. Let create an event that you want to be reminded of! 
   
-  In the **add event** section, user can input an event with title and date. The description and alarm is optional. To setup an alarm, check the *alert me with email* checkbox and input the date and time you would like to be reminded. As per timezone concern, Trial Alert detects your machine's timezone and intercepts your time based on your timezone. Therefore, just type in the time in your desired timezone! One thing to note is that the event date does not limit when you can set your alarm, the event date is just for your reference whereas the alarm datetime determines when our email notification will trigger.
+  In the **add event** section, user can input an event with title and date (description is optional). To setup an alarm, check the *alert me with email* checkbox and input the date and time you would like to be reminded. As per timezone concern, Trial Alert detects your machine's timezone and intercepts your time based on your timezone. Therefore, just type in the time in your desired timezone! One thing to note is that the event date does not limit when you can set your alarm, **event date is just for your reference** whereas the **alarm datetime determines when the email notification will trigger**.
   
-  After that, the event will be submitted into the database. You should be able to see your new event appearing in your dashboard. If you have set up an alarm, it will send an email at your specified time and you will be reminded. However, you can also **edit** or **remove** the event. Editing the event allows you to change the detail and the alarm, and removing the event will delete your event irreversibllly.
+  After that, the event will be submitted into our database. You should be able to see your new event appearing in your dashboard. If you have set up an alarm, it will send an email at your specified time and you will be reminded. However, you can also **edit** or **remove** the event. Editing the event allows you to change the detail and the alarm, and removing the event will delete your event irreversibllly.
   
   At your specified time, you should receive an email from our friendly trial alert bot. It is a simple email that reminds you with the details of the event, so that you can *be reminded*.
   
